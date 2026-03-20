@@ -1,0 +1,14 @@
+ssid=Knight
+password=2gEDsvGZ5Fxx7ACa8zlN
+timezone=8
+dst=0
+colorScheme=1
+ampLevelPCM=0
+biasLevelPCM=0
+ampLevelMIC=0
+biasLevelMIC=0
+brightness=50
+autoDim=1
+decayPCM=0
+decayMIC=0
+mode=0

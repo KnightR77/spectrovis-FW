@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SpectroVis Config</title>
+  <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #111827;
+      color: #f3f4f6;
+    }
+    .wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+    h1 {
+      font-size: 22px;
+      margin: 0 0 14px;
+    }
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .tabbtn {
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 14px;
+      background: #1f2937;
+      color: #e5e7eb;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .tabbtn.active {
+      background: #2563eb;
+    }
+    .panel {
+      display: none;
+      background: #1f2937;
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+    .panel.active { display: block; }
+    .row { margin-bottom: 12px; }
+    label {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 6px;
+      color: #d1d5db;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #374151;
+      background: #111827;
+      color: #f9fafb;
+      font-size: 14px;
+    }
+    .inline {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .btn {
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 14px;
+      background: #2563eb;
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+      margin-right: 8px;
+    }
+    .btn.secondary { background: #374151; }
+    .status {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #93c5fd;
+      min-height: 18px;
+    }
+    .list {
+      max-height: 180px;
+      overflow: auto;
+      border: 1px solid #374151;
+      border-radius: 10px;
+      padding: 6px;
+      background: #111827;
+    }
+    .net {
+      padding: 8px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .net:hover { background: #243041; }
+    .hint { font-size: 12px; color: #9ca3af; }
+    @media (max-width: 640px) {
+      .inline { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>SpectroVis Configurator</h1>
+
+    <div class="tabs">
+      <button class="tabbtn active" data-tab="modee">Mode Setting</button>
+      <button class="tabbtn" data-tab="wifi">WiFi Config</button>
+      <button class="tabbtn" data-tab="time">Time Config</button>
+      <button class="tabbtn" data-tab="display">Display Config</button>
+      <button class="tabbtn" data-tab="gain">Gain Config</button>
+      <button class="tabbtn" data-tab="fwupd">Firmware Update</button>
+    </div>
+    <section class="panel active" id="modee">
+      <div class="row">
+        <label for="mode">Current Mode</label>
+        <select id="mode">
+          <option value="0">Clock</option>
+          <option value="1">AUX IN</option>
+          <option value="2">Microphone</option>
+        </select>
+      </div>
+      <button class="btn" id="saveMode" type="button">Save</button>
+      <div class="status" id="modeStatus"></div>
+    </section>
+
+    <section class="panel" id="wifi">
+      <div class="row">
+        <button class="btn secondary" id="scanBtn" type="button">Scan WiFi</button>
+      </div>
+      <div class="row">
+        <label>Found Networks</label>
+        <div class="list" id="wifiList">Press Scan WiFi.</div>
+      </div>
+      <div class="row">
+        <label for="ssid">SSID</label>
+        <input id="ssid" maxlength="32" placeholder="Enter SSID">
+      </div>
+      <div class="row">
+        <label for="password">Password</label>
+        <input id="password" maxlength="64" type="password" placeholder="Enter password">
+      </div>
+      <button class="btn" id="saveWifi" type="button">Save</button>
+      <div class="status" id="wifiStatus"></div>
+    </section>
+
+    <section class="panel" id="time">
+      <div class="inline">
+        <div class="row">
+          <label for="timezone">Timezone</label>
+          <select id="timezone"></select>
+        </div>
+        <div class="row">
+          <label for="dst">Daylight Saving</label>
+          <select id="dst">
+            <option value="0">Off</option>
+            <option value="1">On</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn" id="saveTime" type="button">Save</button>
+      <div class="status" id="timeStatus"></div>
+    </section>
+
+    <section class="panel" id="display">
+      <div class="inline">
+        <div class="row">
+          <label for="brightness">Brightness: <span id="brightnessValue">100</span></label>
+          <input id="brightness" type="range" min="0" max="100" step="1" value="100">
+        </div>
+        <div class="row">
+          <label for="autoDim">Auto Dimming (During Night)</label>
+          <select id="autoDim">
+            <option value="0">Off</option>
+            <option value="1">On</option>
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <label for="scheme">Color Scheme</label>
+        <select id="scheme">
+          <option value="1">Color 1</option>
+          <option value="2">Color 2</option>
+          <option value="3">Color 3</option>
+          <option value="4">Color 4</option>
+          <option value="5">Color 5</option>
+        </select>
+      </div>
+      <div class="inline">
+        <div class="row">
+          <label for="auxDecay">AUX Decay</label>
+          <select id="auxDecay">
+            <option value="-2">-2</option>
+            <option value="-1">-1</option>
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+          </select>
+        </div>
+        <div class="row">
+          <label for="micDecay">MIC Decay</label>
+          <select id="micDecay">
+            <option value="-2">-2</option>
+            <option value="-1">-1</option>
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="btn" id="saveDisp" type="button">Save</button>
+      <div class="status" id="dispStatus"></div>
+    </section>
+    <section class="panel" id="gain">
+      <div class="inline">
+        <div class="row">
+          <label for="ampLevelPCM">AUX Gain</label>
+          <select id="ampLevelPCM">
+            <option value="-2">-2</option>
+            <option value="-1">-1</option>
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+          </select>
+        </div>
+        <div class="row">
+          <label for="biasLevelPCM">AUX Bias</label>
+          <select id="biasLevelPCM">
+            <option value="-2">-2</option>
+            <option value="-1">-1</option>
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+          </select>
+        </div>
+      </div>
+      <div class="inline">
+        <div class="row">
+          <label for="ampLevelMIC">Microphone Gain</label>
+          <select id="ampLevelMIC">
+            <option value="-2">-2</option>
+            <option value="-1">-1</option>
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+          </select>
+        </div>
+        <div class="row">
+          <label for="biasLevelMIC">Microphone Bias</label>
+          <select id="biasLevelMIC">
+            <option value="-2">-2</option>
+            <option value="-1">-1</option>
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn" id="saveGain" type="button">Save</button>
+      <div class="status" id="gainStatus"></div>
+    </section>
+  </div>
+    <section class="panel" id="fwupd">
+      <h2>Firmware Update</h2>
+      <p>Upload a new firmware file to update the device.</p>
+      <input type="file" id="fwFile">
+      <button class="btn" id="uploadFw" type="button">Upload</button>
+      <div class="status" id="fwStatus"></div>
+    </section>
+
+  <script>
+    const tabs = document.querySelectorAll('.tabbtn');
+    const panels = document.querySelectorAll('.panel');
+
+    tabs.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabs.forEach(b => b.classList.remove('active'));
+        panels.forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    function setStatus(id, msg) {
+      document.getElementById(id).textContent = msg;
+    }
+
+    function fillTZ() {
+      const sel = document.getElementById('timezone');
+      for (let i = -11; i <= 11; i++) {
+        const opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = `UTC${i >= 0 ? '+' : ''}${i}`;
+        sel.appendChild(opt);
+      }
+    }
+
+    async function loadConfig() {
+      try {
+        const r = await fetch('/api/config');
+        const c = await r.json();
+        document.getElementById('ssid').value = c.ssid || '';
+        document.getElementById('timezone').value = String(c.timezone ?? 0);
+        document.getElementById('dst').value = String(c.dst ?? 0);
+        document.getElementById('autoDim').value = String(c.autoDim ?? 0);
+        document.getElementById('scheme').value = String(c.colorScheme ?? 1);
+        document.getElementById('brightness').value = String(c.brightness ?? 100);
+        document.getElementById('brightnessValue').textContent = String(c.brightness ?? 100);
+        document.getElementById('ampLevelPCM').value = String(c.ampLevelPCM ?? 0);
+        document.getElementById('biasLevelPCM').value = String(c.biasLevelPCM ?? 0);
+        document.getElementById('ampLevelMIC').value = String(c.ampLevelMIC ?? 0);
+        document.getElementById('biasLevelMIC').value = String(c.biasLevelMIC ?? 0);
+        document.getElementById('decayPCM').value = String(c.decayPCM ?? 0);
+        document.getElementById('decayMIC').value = String(c.decayMIC ?? 0);
+        document.getElementById('mode').value = String(c.mode ?? 0);
+      } catch (e) {
+        console.log(e);
+      }
+    }
+
+    async function scanWiFi() {
+      setStatus('wifiStatus', 'Scanning...');
+      const box = document.getElementById('wifiList');
+      box.innerHTML = 'Scanning...';
+      try {
+        const r = await fetch('/api/scan');
+        const arr = await r.json();
+        if (!arr.length) {
+          box.innerHTML = 'No networks found.';
+        } else {
+          box.innerHTML = '';
+          arr.forEach(n => {
+            const d = document.createElement('div');
+            d.className = 'net';
+            d.textContent = `${n.ssid} (${n.rssi} dBm)`;
+            d.onclick = () => document.getElementById('ssid').value = n.ssid;
+            box.appendChild(d);
+          });
+        }
+        setStatus('wifiStatus', 'Scan complete.');
+      } catch (e) {
+        box.innerHTML = 'Scan failed.';
+        setStatus('wifiStatus', 'Scan failed.');
+      }
+    }
+
+    async function post(url, body, statusId, okMsg) {
+      try {
+        const r = await fetch(url, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+          body: new URLSearchParams(body)
+        });
+        const t = await r.text();
+        setStatus(statusId, r.ok ? okMsg : t);
+      } catch (e) {
+        setStatus(statusId, 'Request failed.');
+      }
+    }
+
+    document.getElementById('saveMode').onclick = () => post('/save/mode', {
+      mode: document.getElementById('mode').value
+    }, 'modeStatus', 'Mode saved.');
+
+    document.getElementById('scanBtn').onclick = scanWiFi;
+    document.getElementById('saveWifi').onclick = () => post('/save/wifi', {
+      ssid: document.getElementById('ssid').value,
+      password: document.getElementById('password').value
+    }, 'wifiStatus', 'WiFi saved.');
+
+    document.getElementById('saveTime').onclick = () => post('/save/time', {
+      timezone: document.getElementById('timezone').value,
+      dst: document.getElementById('dst').value
+    }, 'timeStatus', 'Time saved.');
+
+    document.getElementById('brightness').oninput = () => {
+      document.getElementById('brightnessValue').textContent = document.getElementById('brightness').value;
+    };
+  
+    document.getElementById('saveDisp').onclick = () => post('/save/disp', {
+      scheme: document.getElementById('scheme').value,
+      brightness: document.getElementById('brightness').value,
+      autoDim: document.getElementById('autoDim').value,
+      decayPCM: document.getElementById('auxDecay').value,
+      decayMIC: document.getElementById('micDecay').value
+    }, 'dispStatus', 'Display saved.');
+
+    document.getElementById('saveGain').onclick = () => post('/save/gain', {
+      ampLevelPCM: document.getElementById('ampLevelPCM').value,
+      biasLevelPCM: document.getElementById('biasLevelPCM').value,
+      ampLevelMIC: document.getElementById('ampLevelMIC').value,
+      biasLevelMIC: document.getElementById('biasLevelMIC').value
+    }, 'gainStatus', 'Gain saved.');
+
+      document.getElementById('uploadFw').onclick = async () => {
+        const fileInput = document.getElementById('fwFile');
+        if (fileInput.files.length === 0) {
+          setStatus('fwStatus', 'Please select a file.');
+          return;
+        }
+        const file = fileInput.files[0];
+        const formData = new FormData();
+        formData.append('firmware', file);
+        try {
+          const r = await fetch('/api/update', {
+            method: 'POST',
+            body: formData
+          });
+          const t = await r.text();
+          setStatus('fwStatus', r.ok ? 'Firmware update successful. Rebooting...' : t);
+        } catch (e) {
+          setStatus('fwStatus', 'Firmware update failed.');
+        }
+      };
+      
+    fillTZ();
+    loadConfig();
+  </script>
+</body>
+</html>
