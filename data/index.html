@@ -195,8 +195,8 @@
       </div>
       <div class="inline">
         <div class="row">
-          <label for="auxDecay">AUX Decay</label>
-          <select id="auxDecay">
+          <label for="decayPCM">AUX Decay</label>
+          <select id="decayPCM">
             <option value="-2">-2</option>
             <option value="-1">-1</option>
             <option value="0">0</option>
@@ -205,8 +205,8 @@
           </select>
         </div>
         <div class="row">
-          <label for="micDecay">MIC Decay</label>
-          <select id="micDecay">
+          <label for="decayMIC">MIC Decay</label>
+          <select id="decayMIC">
             <option value="-2">-2</option>
             <option value="-1">-1</option>
             <option value="0">0</option>
@@ -389,8 +389,8 @@
       scheme: document.getElementById('scheme').value,
       brightness: document.getElementById('brightness').value,
       autoDim: document.getElementById('autoDim').value,
-      decayPCM: document.getElementById('auxDecay').value,
-      decayMIC: document.getElementById('micDecay').value
+      decayPCM: document.getElementById('decayPCM').value,
+      decayMIC: document.getElementById('decayMIC').value
     }, 'dispStatus', 'Display saved.');
 
     document.getElementById('saveGain').onclick = () => post('/save/gain', {

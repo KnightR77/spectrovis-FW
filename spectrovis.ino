@@ -168,6 +168,7 @@ void PCM_tick(){
   disp.show();
   // Serial.println(biasPCM);
   // Serial.println(ampPCM);
+  // Serial.println(decayPCM);
 }
 
 void MIC_tick(){
@@ -206,6 +207,6 @@ void clock_tick(){
   int hour = p_tm->tm_hour;
   int minute = p_tm->tm_min;
 
-  disp.drawTimeHHMM(hour, minute);
+  disp.drawTimeHHMM(hour, minute,(p_tm->tm_sec % 2) == 0);
   disp.show();
 }
