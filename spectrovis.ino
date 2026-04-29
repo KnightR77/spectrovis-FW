@@ -74,6 +74,10 @@ float biasMIC = 5;
 float ampMIC = 0.3f;
 float decayMIC = 0.5f;
 
+int sampleAvg = 0;
+static const int avgThresh = 50000;
+static const time_t nSoundTimeout = 5000;
+time_t tNoSound = millis();
 
 int colorScheme = 1;
 int brightness = 50;
@@ -131,13 +135,25 @@ void loop() {
   // Serial.print("Curr Mode: ");
   // Serial.println(mode);
   handleWebServer();
+  getSamples(&I2S, frame, samples, N, &sampleAvg);
+  // Serial.println(sampleAvg);
   if (mode == 0){
     clock_tick();
     delay(1000);
   }
   else if (mode == 1){
-    PCM_tick();
-    delay(10);
+    if ((sampleAvg < avgThresh) && ((millis()-tNoSound) > nSoundTimeout)){
+        Serial.println("Music Stopped");
+        clock_tick();
+        delay(1000);
+    }
+    else {
+      if (sampleAvg > avgThresh){
+        tNoSound = millis();
+      }
+      PCM_tick();
+      delay(10);
+    }
   }
   else if (mode == 2){
     MIC_tick();
@@ -154,7 +170,7 @@ void PCM_tick(){
     disp.show();
     beginPCM(&I2S, PIN_BCK, PIN_WS, PIN_DPCM, PIN_MCLK, SAMPLE_RATE);
   }
-  getSamples(&I2S, frame, samples, N);
+  // getSamples(&I2S, frame, samples, N);
   removeDC(samples, N);
   hannWindow(samples, N);
   computeBands(levels, samples, NUM_BANDS, N, centers, SAMPLE_RATE, bias, biasPCM, ampPCM);
@@ -181,7 +197,7 @@ void MIC_tick(){
     beginMIC(&I2S, PIN_BCK, PIN_WS, PIN_DMIC, SAMPLE_RATE);
   }
   // Serial.println("MIC ticks");
-  getSamples(&I2S, frame, samples, N);
+  // getSamples(&I2S, frame, samples, N);
   removeDC(samples, N);
   hannWindow(samples, N);
   computeBands(levels, samples, NUM_BANDS, N, centers, SAMPLE_RATE, bias, biasMIC, ampMIC);

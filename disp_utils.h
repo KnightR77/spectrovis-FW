@@ -107,8 +107,8 @@ public:
       if (hour >= 7 && hour < 22) {
         setBrightness(brightness);
       } else {
-        if (brightness > 20) {
-          setBrightness(20);
+        if (brightness > 5) {
+          setBrightness(5);
         } else {
            setBrightness(brightness);
         }

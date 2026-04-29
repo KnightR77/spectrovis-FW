@@ -45,7 +45,8 @@ float bandPower(const float* x, int len, float centerFreq, float fs) {
   return p;
 }
 
-float* getSamples(I2SClass* I2S, int32_t* frame, float* samples, int window){
+float* getSamples(I2SClass* I2S, int32_t* frame, float* samples, int window, int* avg){
+    *avg = 0;
     for (int i = 0; i < window; i++) {
         size_t n = I2S->readBytes((char*)frame, sizeof(frame));
         if (n != sizeof(frame)) {
@@ -55,7 +56,10 @@ float* getSamples(I2SClass* I2S, int32_t* frame, float* samples, int window){
 
         int32_t left = pcm1808_to_s24(frame[0]);
         samples[i] = (float)left;
+        // Serial.println(samples[i]);
+        *avg += abs(samples[i])/window;
     }
+    // Serial.println(avg);
     return samples;
 }
 
